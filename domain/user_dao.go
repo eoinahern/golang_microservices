@@ -20,6 +20,10 @@ type userDaoInterface interface {
 type userDao struct {
 }
 
+func init() {
+	UserDao = &userDao{}
+}
+
 //GetUser : fake getting user from DB
 func (u *userDao) GetUser(id int64) (*User, *utils.ApplicationError) {
 

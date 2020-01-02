@@ -9,16 +9,30 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var UserDaoMock userDaoMock
+var (
+	UserDaoMock     userDaoMock
+	getUserfunction func(int64) (*domain.User, *utils.ApplicationError)
+)
 
 type userDaoMock struct {
 }
 
 func (m *userDaoMock) GetUser(id int64) (*domain.User, *utils.ApplicationError) {
-	return nil, nil
+	return getUserfunction(id)
+}
+
+func init() {
+	UserDaoMock = userDaoMock{}
 }
 
 func TestGetUserNotFound(t *testing.T) {
+
+	getUserfunction = func(id int64) (*domain.User, *utils.ApplicationError) {
+		return nil, &utils.ApplicationError{
+			StatusCode: http.StatusNotFound,
+			Code:       "not_found",
+		}
+	}
 
 	user, err := UserService.GetUser(0)
 	assert.Nil(t, user)
@@ -29,7 +43,7 @@ func TestGetUserNotFound(t *testing.T) {
 
 func TestGetNoErr(t *testing.T) {
 
-	user, err := UserService.GetUser(0)
-	assert.Nil(t, user)
-	assert.NotNil(t, err)
+	user, err := UserService.GetUser(123)
+	assert.Nil(t, err)
+	assert.EqualValues(t, 123, user.ID)
 }
