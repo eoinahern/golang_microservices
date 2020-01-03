@@ -1,17 +1,19 @@
 package app
 
 import (
-	"fmt"
-	"net/http"
-
-	"github.com/eoinahern/golang_microservices/microservice_project/controllers"
+	"github.com/gin-gonic/gin"
 )
+
+var router *gin.Engine
 
 //StartApp : starts the application
 func StartApp() {
 
-	fmt.Println("app starting ......")
-	http.HandleFunc("/users", controllers.GetUser)
-	http.ListenAndServe(":9090", nil)
+	mapURLs()
+	router.Run(":9090")
 
+}
+
+func init() {
+	router = gin.Default()
 }

@@ -1,18 +1,18 @@
 package controllers
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 
 	"github.com/eoinahern/golang_microservices/microservice_project/services"
 	"github.com/eoinahern/golang_microservices/microservice_project/utils"
+	"github.com/gin-gonic/gin"
 )
 
 //GetUser : returns a user
-func GetUser(resp http.ResponseWriter, req *http.Request) {
+func GetUser(cont *gin.Context) {
 
-	userID, err := strconv.ParseInt(req.URL.Query().Get("user_id"), 10, 64)
+	userID, err := strconv.ParseInt(cont.Param("user_id"), 10, 64)
 
 	if err != nil {
 
@@ -22,24 +22,17 @@ func GetUser(resp http.ResponseWriter, req *http.Request) {
 			Code:       "bad request",
 		}
 
-		marshaledErr, _ := json.Marshal(userErr)
-		resp.WriteHeader(userErr.StatusCode)
-		resp.Write([]byte(marshaledErr))
+		cont.JSON(http.StatusBadRequest, userErr)
 		return
 	}
 
 	myuser, userErr := services.UserService.GetUser(userID)
 
 	if userErr != nil {
-		jsonErr, _ := json.Marshal(userErr)
-		resp.WriteHeader(userErr.StatusCode)
-		resp.Write([]byte(jsonErr))
+		cont.JSON(userErr.StatusCode, userErr)
 		return
 	}
 
-	jsonUser, _ := json.Marshal(myuser)
-	resp.WriteHeader(http.StatusOK)
-	resp.Header().Add("Content-Type", "application/json")
-	resp.Write(jsonUser)
+	cont.JSON(http.StatusOK, myuser)
 
 }
