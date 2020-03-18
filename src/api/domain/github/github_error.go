@@ -1,6 +1,6 @@
 package github
 
-type GithubErrorResponses struct {
+type GithubErrorResponse struct {
 	Message          string        `json:"message"`
 	DocumentationUrl string        `json:"documentation_url"`
 	Errors           []GithubError `json:"errors"`
